@@ -29,7 +29,7 @@
 
 #include "common/asserts.h"
 #include "clientsideencryption.h"
-#include "jsonuserstatusjob.h"
+#include "ocsuserstatusconnector.h"
 
 #include <QLoggingCategory>
 #include <QNetworkReply>
@@ -567,8 +567,8 @@ void Account::setCapabilities(const QVariantMap &caps)
 
 void Account::setupUserStatusJob()
 {
-    _userStatusJob = std::make_shared<JsonUserStatusJob>(sharedFromThis());
-    connect(_userStatusJob.get(), &UserStatusJob::userStatusFetched, this, [this](const UserStatus &) {
+    _userStatusJob = std::make_shared<OcsUserStatusConnector>(sharedFromThis());
+    connect(_userStatusJob.get(), &UserStatusConnector::userStatusFetched, this, [this](const UserStatus &) {
         emit userStatusChanged();
     });
 }
@@ -770,7 +770,7 @@ PushNotifications *Account::pushNotifications() const
     return _pushNotifications;
 }
 
-std::shared_ptr<UserStatusJob> Account::userStatusJob() const
+std::shared_ptr<UserStatusConnector> Account::userStatusJob() const
 {
     return _userStatusJob;
 }
