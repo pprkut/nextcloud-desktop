@@ -94,7 +94,6 @@ set(client_SRCS
     systray.cpp
     thumbnailjob.cpp
     userinfo.cpp
-    userstatus.cpp
     accountstate.cpp
     addcertificatedialog.cpp
     authenticationdialog.cpp
@@ -107,6 +106,7 @@ set(client_SRCS
     headerbanner.cpp
     iconjob.cpp
     remotewipe.cpp
+    userstatusdialogmodel.cpp
     tray/ActivityData.cpp
     tray/ActivityListModel.cpp
     tray/UserModel.cpp
