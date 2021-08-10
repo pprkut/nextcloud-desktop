@@ -577,9 +577,6 @@ void OwncloudSetupWizard::slotCreateRemoteFolderFinished(QNetworkReply::NetworkE
 
 void OwncloudSetupWizard::finalizeSetup(bool success)
 {
-    // enable/disable the finish button.
-    _ocWizard->enableFinishOnResultWidget(success);
-
     const QString localFolder = _ocWizard->property("localFolder").toString();
     if (success) {
         if (!(localFolder.isEmpty() || _remoteFolder.isEmpty())) {
