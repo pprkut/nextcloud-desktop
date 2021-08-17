@@ -98,7 +98,7 @@ chmod a+x linuxdeployqt*.AppImage
 rm ./linuxdeployqt-continuous-x86_64.AppImage
 unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/app/usr/lib/
-./squashfs-root/AppRun ${DESKTOP_FILE} -bundle-non-qt-libs -qmldir=/home/user/src/gui
+./squashfs-root/AppRun ${DESKTOP_FILE} -bundle-non-qt-libs -qmldir=${DESKTOP_CLIENT_ROOT}/src/gui
 
 # Set origin
 ./squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/' /app/usr/lib/lib${APPNAME}sync.so.0
@@ -107,4 +107,4 @@ export LD_LIBRARY_PATH=/app/usr/lib/
 ./squashfs-root/AppRun ${DESKTOP_FILE} -appimage
 
 #move AppImage
-mv /build/*.AppImage /home/user/
+mv /build/*.AppImage ${DESKTOP_CLIENT_ROOT}/
