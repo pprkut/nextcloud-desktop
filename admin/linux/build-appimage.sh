@@ -102,4 +102,4 @@ export LD_LIBRARY_PATH=/app/usr/lib/
 ./squashfs-root/AppRun ${DESKTOP_FILE} -appimage
 
 #move AppImage
-mv /*.AppImage ${DESKTOP_CLIENT_ROOT}/
+mv *.AppImage ${DESKTOP_CLIENT_ROOT}/
