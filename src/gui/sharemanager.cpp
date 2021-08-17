@@ -296,7 +296,7 @@ UserGroupShare::UserGroupShare(AccountPtr account,
     , _note(note)
     , _expireDate(expireDate)
 {
-    Q_ASSERT(shareType == TypeUser || shareType == TypeGroup || shareType == TypeEmail);
+    Q_ASSERT(shareType == TypeUser || shareType == TypeGroup || shareType == TypeEmail || shareType == TypeRoom);
     Q_ASSERT(shareWith);
 }
 
@@ -461,7 +461,7 @@ void ShareManager::slotSharesFetched(const QJsonDocument &reply)
 
         if (shareType == Share::TypeLink) {
             newShare = parseLinkShare(data);
-        } else if (shareType == Share::TypeGroup || shareType == Share::TypeUser || shareType == Share::TypeEmail) {
+        } else if (shareType == Share::TypeGroup || shareType == Share::TypeUser || shareType == Share::TypeEmail || shareType == Share::TypeRoom) {
             newShare = parseUserGroupShare(data);
         } else {
             newShare = parseShare(data);
