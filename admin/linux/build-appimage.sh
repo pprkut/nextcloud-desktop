@@ -51,25 +51,25 @@ make -j$(nproc) install
 # Move stuff around
 cd /app
 
-mv ./usr/lib/x86_64-linux-gnu/* ./usr/lib/
+mv usr/lib/x86_64-linux-gnu/* usr/lib/
 
-mkdir ./usr/plugins
-mv ./usr/lib/nextcloudsync_vfs_suffix.so ./usr/plugins
-mv ./usr/lib/nextcloudsync_vfs_xattr.so ./usr/plugins
+mkdir usr/plugins
+mv usr/lib/nextcloudsync_vfs_suffix.so usr/plugins
+mv usr/lib/nextcloudsync_vfs_xattr.so usr/plugins
 
-rm -rf ./usr/lib/cmake
-rm -rf ./usr/include
-rm -rf ./usr/mkspecs
-rm -rf ./usr/lib/x86_64-linux-gnu/
+rm -rf usr/lib/cmake
+rm -rf usr/include
+rm -rf usr/mkspecs
+rm -rf usr/lib/x86_64-linux-gnu/
 
 # Don't bundle the explorer extentions as we can't do anything with them in the AppImage
-rm -rf ./usr/share/caja-python/
-rm -rf ./usr/share/nautilus-python/
-rm -rf ./usr/share/nemo-python/
+rm -rf usr/share/caja-python/
+rm -rf usr/share/nautilus-python/
+rm -rf usr/share/nemo-python/
 
 # Move sync exclude to right location
-mv ./etc/*/sync-exclude.lst ./usr/bin/
-rm -rf ./etc
+mv usr/etc/*/sync-exclude.lst usr/bin/
+rm -rf etc
 
 # com.nextcloud.desktopclient.nextcloud.desktop
 DESKTOP_FILE=$(ls /app/usr/share/applications/*.desktop)
