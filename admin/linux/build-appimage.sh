@@ -7,9 +7,6 @@ export BUILD_UPDATER=${BUILD_UPDATER:-OFF}
 export BUILDNR=${BUILDNR:-0000}
 export DESKTOP_CLIENT_ROOT=${DESKTOP_CLIENT_ROOT:-/home/user}
 
-mkdir /app
-mkdir /build
-
 export CC=/usr/bin/gcc
 export CXX=/usr/bin/g++
 
@@ -25,32 +22,31 @@ if [ "$BUILD_UPDATER" != "OFF" ]; then
     BUILD_UPDATER=ON
 fi
 
+mkdir /app
+
 # QtKeyChain
-cd /build
 git clone https://github.com/frankosterfeld/qtkeychain.git
 cd qtkeychain
 git checkout v0.10.0
 mkdir build
 cd build
-cmake -D CMAKE_INSTALL_PREFIX=/usr ../
+cmake -D CMAKE_INSTALL_PREFIX=/app/usr ..
 make -j$(nproc)
 make -j$(nproc) install
 
 
 # Build client
-cd /build
 mkdir build-client
 cd build-client
-cmake -D CMAKE_INSTALL_PREFIX=/usr \
+cmake \
+    -D CMAKE_INSTALL_PREFIX=/app/usr \
     -D BUILD_TESTING=OFF \
     -D BUILD_UPDATER=$BUILD_UPDATER \
-    -D QTKEYCHAIN_LIBRARY=/app/usr/lib/x86_64-linux-gnu/libqt5keychain.so \
-    -D QTKEYCHAIN_INCLUDE_DIR=/app/usr/include/qt5keychain/ \
     -D MIRALL_VERSION_BUILD=$BUILDNR \
     -D MIRALL_VERSION_SUFFIX="$VERSION_SUFFIX" \
     ${DESKTOP_CLIENT_ROOT}
 make -j$(nproc)
-make -j$(nproc) DESTDIR=/app install
+make -j$(nproc) install
 
 # Move stuff around
 cd /app
