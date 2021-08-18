@@ -521,9 +521,9 @@ ShareUserLine::ShareUserLine(AccountPtr account,
     showNoteOptions(false);
 
     // email shares do not support notes and expiration dates
-    const bool isNoteAndExpirationDateSupported = _share->getShareType() != Share::ShareType::TypeEmail;
+    const bool isNoteSupported = _share->getShareType() != Share::ShareType::TypeEmail && _share->getShareType() != Share::ShareType::TypeRoom;
 
-    if (isNoteAndExpirationDateSupported) {
+    if (isNoteSupported) {
         _noteLinkAction = new QAction(tr("Note to recipient"));
         _noteLinkAction->setCheckable(true);
         menu->addAction(_noteLinkAction);
@@ -536,7 +536,9 @@ ShareUserLine::ShareUserLine(AccountPtr account,
 
     showExpireDateOptions(false);
 
-    if (isNoteAndExpirationDateSupported) {
+    const bool isExpirationDateSupported = _share->getShareType() != Share::ShareType::TypeEmail;
+
+    if (isExpirationDateSupported) {
         // email shares do not support expiration dates
         _expirationDateLinkAction = new QAction(tr("Set expiration date"));
         _expirationDateLinkAction->setCheckable(true);
