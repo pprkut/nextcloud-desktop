@@ -177,7 +177,7 @@ private:
   void setNote(const QString &note);
 
   void toggleExpireDateOptions(bool enable);
-  void showExpireDateOptions(bool show);
+  void showExpireDateOptions(bool show, const QDate &initialDate = QDate());
   void setExpireDate();
 
   void togglePasswordSetProgressAnimation(bool show);

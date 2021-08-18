@@ -326,6 +326,11 @@ QDate UserGroupShare::getExpireDate() const
 
 void UserGroupShare::setExpireDate(const QDate &date)
 {
+    if (_expireDate == date) {
+        emit expireDateSet();
+        return;
+    }
+
     auto *job = new OcsShareJob(_account);
     connect(job, &OcsShareJob::shareJobFinished, this, &UserGroupShare::slotExpireDateSet);
     connect(job, &OcsJob::ocsError, this, &UserGroupShare::slotOcsError);

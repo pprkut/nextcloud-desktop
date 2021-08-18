@@ -501,7 +501,6 @@ ShareUserLine::ShareUserLine(AccountPtr account,
     _ui->permissionsEdit->setEnabled(enabled);
     connect(_ui->permissionsEdit, &QAbstractButton::clicked, this, &ShareUserLine::slotEditPermissionsChanged);
     connect(_ui->noteConfirmButton, &QAbstractButton::clicked, this, &ShareUserLine::onNoteConfirmButtonClicked);
-    connect(_ui->confirmExpirationDate, &QAbstractButton::clicked, this, &ShareUserLine::setExpireDate);
     connect(_ui->calendar, &QDateTimeEdit::dateChanged, this, &ShareUserLine::setExpireDate);
 
     connect(_share.data(), &UserGroupShare::noteSet, this, &ShareUserLine::disableProgessIndicatorAnimation);
@@ -542,12 +541,12 @@ ShareUserLine::ShareUserLine(AccountPtr account,
         _expirationDateLinkAction = new QAction(tr("Set expiration date"));
         _expirationDateLinkAction->setCheckable(true);
         menu->addAction(_expirationDateLinkAction);
+        bool isDateValid = _share->getExpireDate().isValid();
         connect(_expirationDateLinkAction, &QAction::triggered, this, &ShareUserLine::toggleExpireDateOptions);
         const auto expireDate = _share->getExpireDate().isValid() ? share.data()->getExpireDate() : QDate();
         if (!expireDate.isNull()) {
-            _ui->calendar->setDate(expireDate);
             _expirationDateLinkAction->setChecked(true);
-            showExpireDateOptions(true);
+            showExpireDateOptions(true, expireDate);
         }
     }
 
@@ -926,7 +925,6 @@ void ShareUserLine::customizeStyle()
     _deleteShareButton->setIcon(deleteicon);
 
     _ui->noteConfirmButton->setIcon(Theme::createColorAwareIcon(":/client/theme/confirm.svg"));
-    _ui->confirmExpirationDate->setIcon(Theme::createColorAwareIcon(":/client/theme/confirm.svg"));
     _ui->progressIndicator->setColor(QGuiApplication::palette().color(QPalette::WindowText));
 
     // make sure to force BackgroundRole to QPalette::WindowText for a lable, because it's parent always has a different role set that applies to children unless customized
@@ -979,16 +977,14 @@ void ShareUserLine::toggleExpireDateOptions(bool enable)
     }
 }
 
-void ShareUserLine::showExpireDateOptions(bool show)
+void ShareUserLine::showExpireDateOptions(bool show, const QDate &initialDate)
 {
     _ui->expirationLabel->setVisible(show);
     _ui->calendar->setVisible(show);
-    _ui->confirmExpirationDate->setVisible(show);
 
     if (show) {
-        const QDate date = QDate::currentDate().addDays(1);
-        _ui->calendar->setDate(date);
-        _ui->calendar->setMinimumDate(date);
+        _ui->calendar->setMinimumDate(QDate::currentDate().addDays(1));
+        _ui->calendar->setDate(initialDate.isValid() ? initialDate : _ui->calendar->minimumDate());
         _ui->calendar->setFocus();
     }
 
