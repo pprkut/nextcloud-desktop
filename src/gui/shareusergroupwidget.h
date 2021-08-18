@@ -171,6 +171,9 @@ private:
     void loadAvatar();
     void customizeStyle();
 
+    QPixmap pixmapForShareeType(int type, const QColor &backgroundColor = QColor()) const;
+    QColor backgroundColorForShareeType(int type) const;
+
   void showNoteOptions(bool show);
   void toggleNoteOptions(bool enable);
   void onNoteConfirmButtonClicked();

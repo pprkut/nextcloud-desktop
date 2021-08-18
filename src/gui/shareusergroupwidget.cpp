@@ -543,7 +543,6 @@ ShareUserLine::ShareUserLine(AccountPtr account,
         _expirationDateLinkAction = new QAction(tr("Set expiration date"));
         _expirationDateLinkAction->setCheckable(true);
         menu->addAction(_expirationDateLinkAction);
-        bool isDateValid = _share->getExpireDate().isValid();
         connect(_expirationDateLinkAction, &QAction::triggered, this, &ShareUserLine::toggleExpireDateOptions);
         const auto expireDate = _share->getExpireDate().isValid() ? share.data()->getExpireDate() : QDate();
         if (!expireDate.isNull()) {
@@ -651,11 +650,9 @@ void ShareUserLine::loadAvatar()
      *
      * This will be shown until the avatar image data arrives.
      */
-    const QByteArray hash = QCryptographicHash::hash(_ui->sharedWith->text().toUtf8(), QCryptographicHash::Md5);
-    double hue = static_cast<quint8>(hash[0]) / 255.;
 
     // See core/js/placeholder.js for details on colors and styling
-    const QColor bg = QColor::fromHslF(hue, 0.7, 0.68);
+    const auto backgroundColor = backgroundColorForShareeType(_share->getShareWith()->type());
     const QString style = QString(R"(* {
         color: #fff;
         background-color: %1;
@@ -663,12 +660,20 @@ void ShareUserLine::loadAvatar()
         text-align: center;
         line-height: %2px;
         font-size: %2px;
-    })").arg(bg.name(), QString::number(avatarSize / 2));
+    })").arg(backgroundColor.name(), QString::number(avatarSize / 2));
     _ui->avatar->setStyleSheet(style);
 
     // The avatar label is the first character of the user name.
     const QString text = _share->getShareWith()->displayName();
-    _ui->avatar->setText(text.at(0).toUpper());
+
+    const auto pixmap = pixmapForShareeType(_share->getShareWith()->type(), backgroundColor);
+
+    if (!pixmap.isNull()) {
+        _ui->avatar->setPixmap(pixmap);
+    } else {
+        qCDebug(lcSharing) << "pixmap is null for share type: " << _share->getShareWith()->type();
+        _ui->avatar->setText(text.at(0).toUpper());
+    }
 
     /* Start the network job to fetch the avatar data.
      *
@@ -931,6 +936,40 @@ void ShareUserLine::customizeStyle()
 
     // make sure to force BackgroundRole to QPalette::WindowText for a lable, because it's parent always has a different role set that applies to children unless customized
     _ui->errorLabel->setBackgroundRole(QPalette::WindowText);
+}
+
+QPixmap ShareUserLine::pixmapForShareeType(int type, const QColor &backgroundColor) const
+{
+    const QString pixmapColor = backgroundColor.isValid() && !Theme::isDarkColor(backgroundColor) ? "black" : "white";
+    switch (type) {
+    case Sharee::Room:
+        return QPixmap::fromImage(QImage(QString(":/client/theme/%1/talk-app.svg").arg(pixmapColor)));
+    case Sharee::Email:
+        return QPixmap::fromImage(QImage(QString(":/client/theme/%1/email.svg").arg(pixmapColor)));
+    default:
+        return {};
+    }
+}
+
+QColor ShareUserLine::backgroundColorForShareeType(int type) const
+{
+    switch (type) {
+    case Sharee::Room:
+        return Theme::instance()->wizardHeaderBackgroundColor();
+    case Sharee::Email:
+        return Theme::instance()->wizardHeaderTitleColor();
+    default:
+        break;
+    }
+
+    const auto hash = QCryptographicHash::hash(_ui->sharedWith->text().toUtf8(), QCryptographicHash::Md5);
+    Q_ASSERT(hash.size() > 0);
+    if (hash.size() == 0) {
+        qCWarning(lcSharing) << "Failed to calculate hash color for share:" << _share->path();
+        return {};
+    }
+    const double hue = static_cast<quint8>(hash[0]) / 255.;
+    return QColor::fromHslF(hue, 0.7, 0.68);
 }
 
 void ShareUserLine::showNoteOptions(bool show)
